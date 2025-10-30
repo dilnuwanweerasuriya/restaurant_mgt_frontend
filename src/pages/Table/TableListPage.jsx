@@ -5,6 +5,7 @@ import DashboardButton from '../../components/DashboardButton';
 
 export default function TableListPage() {
     const [tables, setTables] = useState([]);
+    const [loading, setLoading] = useState(true);
     const token = localStorage.getItem("token")
 
     const fetchTables = async () => {
@@ -18,14 +19,16 @@ export default function TableListPage() {
             )
             const data = response.data;
             setTables(data);
+            setLoading(false);
         } catch (error) {
             console.error('Error fetching users:', error);
+            setLoading(false);
         }
     };
 
     useEffect(() => {
         fetchTables();
-    }, []);
+    }, [loading]);
 
     return (
         <div className="p-8">

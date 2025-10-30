@@ -2,22 +2,23 @@ import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import {
-  MdTableRestaurant,
   MdShoppingBag,
   MdRestaurantMenu,
   MdPeople,
-  MdSettings,
+  MdSettings
 } from "react-icons/md";
+import { TbReportAnalytics } from "react-icons/tb";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
 
   const cards = [
-    { name: "Reservations & Tables", path: "/tables", icon: <MdTableRestaurant size={40} />, permission: "all" },
+    // { name: "Reservations & Tables", path: "/tables", icon: <MdTableRestaurant size={40} />, permission: "all" },
     { name: "Orders", path: "/orders", icon: <MdShoppingBag size={40} />, permission: "all" },
     { name: "Menu", path: "/menu", icon: <MdRestaurantMenu size={40} />, permission: "all" },
     { name: "Users", path: "/users", icon: <MdPeople size={40} />, permission: "admin" },
+    { name: "Reports", path: "/reports", icon: <TbReportAnalytics size={40} />, permission: "admin" },
     { name: "Settings", path: "/settings", icon: <MdSettings size={40} />, permission: "all" },
   ];
 

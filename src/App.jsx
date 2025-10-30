@@ -17,6 +17,9 @@ import OrderPage from './pages/Order/OrderPage.jsx';
 import TableListPage from './pages/Table/TableListPage.jsx';
 import ReserveTablePage from './pages/Table/ReserveTablePage.jsx';
 import ReservationsPage from './pages/Table/ReservationsPage.jsx';
+import OrderListPage from './pages/Order/OrderListPage.jsx';
+import OrderFormPage from './pages/Order/OrderFormPage.jsx';
+import OrderTypePage from './pages/Order/OrderTypePage.jsx';
 
 function App() {
   return (
@@ -38,6 +41,9 @@ function App() {
                     <Route path='/tables/reservations' element={<ReservationsPage />} />
                     <Route path='/tables/list' element={<TableListPage />} />
                     <Route path='/orders' element={<OrderPage />} />
+                    <Route path='/orders/add' element={<OrderTypePage />} />
+                    <Route path='/orders/add/:typeId' element={<OrderFormPage />} />
+                    <Route path='/orders/list' element={<OrderListPage />} />
                     <Route path='/menu' element={<MenuPage />} />
                     <Route path='/menu/add' element={<MenuFormPage />} />
                     <Route path='/menu/list' element={<MenuListPage />} />
