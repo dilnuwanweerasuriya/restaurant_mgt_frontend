@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import DashboardButton from "../../components/DashboardButton";
+import OptionsButton from "../../components/OptionsButton";
 
 export default function UserFormPage() {
   const [formData, setFormData] = useState({
@@ -56,7 +56,7 @@ export default function UserFormPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
-      <DashboardButton />
+      <OptionsButton />
 
       <div className="max-w-lg mx-auto bg-white shadow-md rounded-lg p-8">
         <h1 className="text-2xl font-bold mb-6 text-center">Add New User</h1>

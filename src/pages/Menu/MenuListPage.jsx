@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
-import DashboardButton from '../../components/DashboardButton';
+import OptionsButton from '../../components/OptionsButton';
 
 function MenuListPage() {
   const token = localStorage.getItem('token');
@@ -29,9 +29,9 @@ function MenuListPage() {
 
   return (
     <div className="p-8">
-      <DashboardButton />
+      <OptionsButton />
 
-      <h1 className="text-2xl font-bold mb-4">All Tables</h1>
+      <h1 className="text-2xl font-bold mb-4">Menu List</h1>
       {/* table for users */}
       <div className="">
         <table className="min-w-full divide-y divide-gray-200">
@@ -46,11 +46,11 @@ function MenuListPage() {
           <tbody className="bg-white divide-y divide-gray-200">
             {menuItems.map(items => (
               <tr key={items._id} className="divide-x divide-gray-200">
-                <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center justify-center">
                   <img src={items.image} alt={items.name} className="w-16 h-16 object-cover rounded-full" />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium text-gray-900">{items.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium text-gray-900">{items.price}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium text-gray-900">LKR {items.price}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium text-gray-900">{items.available ? "Available" : "Not Available"}</td>
               </tr>
             ))}

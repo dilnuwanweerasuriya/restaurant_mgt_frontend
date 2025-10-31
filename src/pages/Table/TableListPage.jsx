@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
-import DashboardButton from '../../components/DashboardButton';
+import OptionsButton from '../../components/OptionsButton';
 
 export default function TableListPage() {
     const [tables, setTables] = useState([]);
@@ -32,7 +32,7 @@ export default function TableListPage() {
 
     return (
         <div className="p-8">
-            <DashboardButton />
+            <OptionsButton />
 
             <h1 className="text-2xl font-bold mb-4">All Tables</h1>
             {/* table for users */}

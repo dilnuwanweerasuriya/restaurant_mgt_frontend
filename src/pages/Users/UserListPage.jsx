@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import DashboardButton from "../../components/DashboardButton";
+import OptionsButton from "../../components/OptionsButton";
 import { Link } from "react-router-dom";
 
 export default function UserListPage() {
@@ -30,7 +30,7 @@ export default function UserListPage() {
 
     return (
         <div className="p-8">
-            <DashboardButton />
+            <OptionsButton />
 
             <h1 className="text-2xl font-bold mb-4">All Users</h1>
             {/* table for users */}

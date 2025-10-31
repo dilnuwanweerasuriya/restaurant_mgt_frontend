@@ -78,7 +78,11 @@ const LoginPage = () => {
             // context login sets user + token
             login(res.data.token);
             toast.success("Login successful");
-            navigate('/', { replace: true });
+            if (res.data.user.role === 'admin') {
+                navigate('/', { replace: true });
+            }else{
+                navigate('/options', { replace: true });
+            }
         } catch (err) {
             console.error(err);
             toast.error("Login failed");

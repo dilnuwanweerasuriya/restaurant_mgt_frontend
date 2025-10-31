@@ -20,6 +20,7 @@ import ReservationsPage from './pages/Table/ReservationsPage.jsx';
 import OrderListPage from './pages/Order/OrderListPage.jsx';
 import OrderFormPage from './pages/Order/OrderFormPage.jsx';
 import OrderTypePage from './pages/Order/OrderTypePage.jsx';
+import OptionsPage from './pages/Dashboard/OptionsPage.jsx';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
                   <Navbar />
                   <Routes>
                     <Route path="/" element={<DashboardPage />} />
+                    <Route path="/options" element={<OptionsPage />} />
                     <Route path='/tables' element={<TablePage />} />
                     <Route path='/tables/reserve' element={<ReserveTablePage />} />
                     <Route path='/tables/reservations' element={<ReservationsPage />} />
