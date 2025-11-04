@@ -52,6 +52,7 @@ function App() {
                     <Route path='/users' element={<Users />} />
                     <Route path='/users/add' element={<UserFormPage />} />
                     <Route path='/users/list' element={<UserListPage />} />
+                    <Route path='/reports' element={<h1>Reports</h1>} />
                     <Route path='/settings' element={<h1>Settings</h1>} />
                   </Routes>
                 </div>

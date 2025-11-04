@@ -1,7 +1,9 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import OptionsButton from "../../components/OptionsButton";
 import DataTable from "../../components/DataTables";
+import { AuthContext } from "../../context/AuthContext";
+
 
 export default function OrderListPage() {
     const [orders, setOrders] = useState([]);
@@ -14,6 +16,8 @@ export default function OrderListPage() {
     const [orderTypeFilter, setOrderTypeFilter] = useState("");
     const [paymentStatusFilter, setPaymentStatusFilter] = useState("");
     const [orderStatusFilter, setOrderStatusFilter] = useState("");
+
+    const { user } = useContext(AuthContext);
 
     const token = localStorage.getItem("token");
 
@@ -47,6 +51,7 @@ export default function OrderListPage() {
                 )
             );
         }
+
 
         if (dateFilter) {
             const filterDate = new Date(dateFilter);
@@ -83,7 +88,7 @@ export default function OrderListPage() {
 
     const clearFilters = () => {
         setSearchTerm("");
-        
+
         const today = new Date();
         setDateFilter(today.toISOString().split('T')[0]);
 
@@ -204,6 +209,7 @@ export default function OrderListPage() {
                         <input
                             type="date"
                             value={dateFilter}
+                            disabled={user?.role !== "admin"}
                             onChange={(e) => setDateFilter(e.target.value)}
                             className="px-3 py-2 bg-zinc-700 border border-zinc-600 rounded-md text-white focus:outline-none focus:border-zinc-500"
                         />
