@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import {
@@ -8,9 +7,9 @@ import {
   MdSettings
 } from "react-icons/md";
 import { TbReportAnalytics } from "react-icons/tb";
+import Grid from "../../components/Grid";
 
 export default function OptionsPage() {
-  const navigate = useNavigate();
   const { user } = useContext(AuthContext);
 
   const cards = [
@@ -30,14 +29,7 @@ export default function OptionsPage() {
     <div className="p-8">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {visibleCards.map((card) => (
-          <div
-            key={card.name}
-            onClick={() => navigate(card.path)}
-            className="bg-white border-2 border-gray-300 hover:border-black shadow-md hover:shadow-lg cursor-pointer rounded-xl flex flex-col items-center justify-center py-10 transition-all"
-          >
-            <div className="text-black mb-4">{card.icon}</div>
-            <span className="text-lg font-semibold">{card.name}</span>
-          </div>
+          <Grid key={card.name} path={card.path} name={card.name} icon={card.icon} />
         ))}
       </div>
     </div >

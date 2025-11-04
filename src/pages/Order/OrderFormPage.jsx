@@ -147,15 +147,15 @@ export default function OrderFormPage() {
     return (
         <div className="p-8">
             <OptionsButton />
-            <div className="max-w-6xl mx-auto p-8 bg-white shadow-lg rounded-xl mt-10">
-                <h2 className="text-2xl font-semibold mb-6 text-gray-800 text-center">
+            <div className="max-w-6xl mx-auto p-8 bg-zinc-900 shadow-lg rounded-xl mt-10 text-zinc-100">
+                <h2 className="text-2xl font-semibold mb-6 text-zinc-100 text-center">
                     New Order
                 </h2>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Order Type */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-zinc-300 mb-2">
                             Order Type
                         </label>
                         <select
@@ -165,7 +165,7 @@ export default function OrderFormPage() {
                             onChange={(e) =>
                                 setFormData({ ...formData, orderType: e.target.value })
                             }
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-100 text-gray-700 cursor-not-allowed"
+                            className="w-full border border-zinc-700 rounded-lg px-3 py-2 bg-zinc-800 text-zinc-100 cursor-not-allowed focus:ring-2 focus:ring-zinc-300"
                         >
                             <option value="dine-in">Dine-In</option>
                             <option value="takeaway">Takeaway</option>
@@ -176,7 +176,7 @@ export default function OrderFormPage() {
                     {formData.orderType !== "dine-in" && (
                         <div className="flex flex-col md:flex-row gap-4">
                             <div className="flex-1">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-medium text-zinc-300 mb-1">
                                     Customer Name
                                 </label>
                                 <input
@@ -186,13 +186,13 @@ export default function OrderFormPage() {
                                     onChange={(e) =>
                                         setFormData({ ...formData, customerName: e.target.value })
                                     }
-                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-black"
+                                    className="w-full border border-zinc-700 rounded-lg px-3 py-2 bg-zinc-800 text-zinc-100 focus:ring-2 focus:ring-zinc-300"
                                     placeholder="e.g. John Doe"
                                 />
                             </div>
 
                             <div className="flex-1">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-medium text-zinc-300 mb-1">
                                     Phone Number
                                 </label>
                                 <input
@@ -202,26 +202,26 @@ export default function OrderFormPage() {
                                     onChange={(e) =>
                                         setFormData({ ...formData, customerPhone: e.target.value })
                                     }
-                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-black"
+                                    className="w-full border border-zinc-700 rounded-lg px-3 py-2 bg-zinc-800 text-zinc-100 focus:ring-2 focus:ring-zinc-300"
                                     placeholder="e.g. 9876543210"
                                 />
                             </div>
                         </div>
                     )}
 
-                    <hr />
+                    <hr className="border-t border-zinc-700 my-6" />
 
                     {/* 🍴 Category + Search */}
                     <div className="flex flex-col md:flex-row gap-4">
                         {/* Category */}
                         <div className="flex-1">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-sm font-medium text-zinc-300 mb-1">
                                 Category:
                             </label>
                             <select
                                 value={selectedCategory}
                                 onChange={(e) => setSelectedCategory(e.target.value)}
-                                className="w-full h-[42px] border border-gray-300 rounded-lg px-3 py-2 text-gray-700 cursor-pointer focus:ring-2 focus:ring-black"
+                                className="w-full h-[42px] border border-zinc-700 rounded-lg px-3 py-2 bg-zinc-800 text-zinc-100 cursor-pointer focus:ring-2 focus:ring-zinc-300"
                             >
                                 <option value="all">All</option>
                                 <option value="starter">Starter</option>
@@ -239,20 +239,20 @@ export default function OrderFormPage() {
                                 placeholder="Search food..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full h-[42px] border border-gray-300 rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-black"
+                                className="w-full h-[42px] border border-zinc-700 rounded-lg px-3 py-2 bg-zinc-800 text-zinc-100 focus:ring-2 focus:ring-zinc-300"
                             />
                         </div>
                     </div>
 
                     {/* Menu Items */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-zinc-300 mb-2">
                             Select Items
                         </label>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-h-[600px] overflow-y-auto p-2">
                             {filteredMenu.length === 0 ? (
-                                <p className="text-gray-500 text-center w-full py-6">
+                                <p className="text-zinc-400 text-center w-full py-6">
                                     No items found
                                 </p>
                             ) : (
@@ -283,11 +283,11 @@ export default function OrderFormPage() {
                                             key={item._id}
                                             className={`flex flex-col items-center border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer ${
                                                 qty > 0
-                                                    ? "border-black bg-gray-50"
-                                                    : "border-gray-200"
+                                                    ? "border-zinc-300 bg-zinc-800"
+                                                    : "border-zinc-700"
                                             }`}
                                         >
-                                            <div className="w-full h-40 bg-gray-100">
+                                            <div className="w-full h-40 bg-zinc-800">
                                                 {item.image ? (
                                                     <img
                                                         src={item.image}
@@ -295,20 +295,20 @@ export default function OrderFormPage() {
                                                         className="w-full h-full object-cover"
                                                     />
                                                 ) : (
-                                                    <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+                                                    <div className="flex items-center justify-center h-full text-zinc-400 text-sm">
                                                         No Image
                                                     </div>
                                                 )}
                                             </div>
 
                                             <div className="flex flex-col items-center p-4 flex-grow text-center">
-                                                <h3 className="text-lg font-semibold text-gray-800">
+                                                <h3 className="text-lg font-semibold text-zinc-100">
                                                     {item.name}
                                                 </h3>
-                                                <p className="text-gray-600 text-sm mt-1">
+                                                <p className="text-zinc-400 text-sm mt-1">
                                                     LKR {item.price}
                                                 </p>
-                                                <p className="text-xs text-gray-400 mt-1 capitalize">
+                                                <p className="text-xs text-zinc-300 mt-1 capitalize">
                                                     {item.category}
                                                 </p>
                                             </div>
@@ -319,8 +319,8 @@ export default function OrderFormPage() {
                                                     onClick={handleDecrease}
                                                     className={`w-8 h-8 rounded-full flex items-center justify-center border ${
                                                         qty > 0
-                                                            ? "border-gray-400 hover:bg-gray-200"
-                                                            : "border-gray-200 text-gray-300 cursor-not-allowed"
+                                                            ? "border-zinc-700 hover:bg-zinc-700 hover:border-white hover:text-white"
+                                                            : "border-zinc-700 text-zinc-400 cursor-not-allowed opacity-50"
                                                     }`}
                                                     disabled={qty === 0}
                                                 >
@@ -334,7 +334,7 @@ export default function OrderFormPage() {
                                                 <button
                                                     type="button"
                                                     onClick={handleIncrease}
-                                                    className="w-8 h-8 rounded-full flex items-center justify-center bg-black text-white hover:bg-gray-800"
+                                                    className="w-8 h-8 rounded-full flex items-center justify-center bg-zinc-900 text-white hover:bg-zinc-800"
                                                 >
                                                     +
                                                 </button>
@@ -349,7 +349,7 @@ export default function OrderFormPage() {
                     {/* Order Status + Payment */}
                     <div className="flex flex-col md:flex-row gap-4">
                         <div className="flex-1">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-sm font-medium text-zinc-300 mb-1">
                                 Order Status
                             </label>
                             <select
@@ -357,7 +357,7 @@ export default function OrderFormPage() {
                                 onChange={(e) =>
                                     setFormData({ ...formData, status: e.target.value })
                                 }
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-700 cursor-pointer"
+                                className="w-full border border-zinc-700 rounded-lg px-3 py-2 bg-zinc-800 text-zinc-100 cursor-pointer focus:ring-2 focus:ring-zinc-300"
                             >
                                 <option value="pending">Pending</option>
                                 <option value="preparing">Preparing</option>
@@ -369,7 +369,7 @@ export default function OrderFormPage() {
                         </div>
 
                         <div className="flex-1">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-sm font-medium text-zinc-300 mb-1">
                                 Payment Status
                             </label>
                             <select
@@ -380,7 +380,7 @@ export default function OrderFormPage() {
                                         paymentStatus: e.target.value,
                                     })
                                 }
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-700 cursor-pointer"
+                                className="w-full border border-zinc-700 rounded-lg px-3 py-2 bg-zinc-800 text-zinc-100 cursor-pointer focus:ring-2 focus:ring-zinc-300"
                             >
                                 <option value="paid">Paid</option>
                                 <option value="unpaid">Unpaid</option>
@@ -390,25 +390,25 @@ export default function OrderFormPage() {
 
                     {/* 🧾 Selected Items Summary */}
                     {formData.items.length > 0 && (
-                        <div className="border-t border-gray-200 pt-4 mt-6">
-                            <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                        <div className="border-t border-zinc-700 pt-4 mt-6">
+                            <h3 className="text-lg font-semibold text-zinc-100 mb-3">
                                 Selected Items
                             </h3>
 
                             <div className="overflow-x-auto">
-                                <table className="min-w-full border border-gray-200 rounded-lg">
-                                    <thead className="bg-gray-50">
+                                <table className="min-w-full border border-zinc-700 rounded-lg">
+                                    <thead className="bg-zinc-800">
                                         <tr>
-                                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                                            <th className="px-4 py-2 text-left text-sm font-medium text-zinc-300">
                                                 Item
                                             </th>
-                                            <th className="px-4 py-2 text-center text-sm font-medium text-gray-600">
+                                            <th className="px-4 py-2 text-center text-sm font-medium text-zinc-300">
                                                 Qty
                                             </th>
-                                            <th className="px-4 py-2 text-center text-sm font-medium text-gray-600">
+                                            <th className="px-4 py-2 text-center text-sm font-medium text-zinc-300">
                                                 Price
                                             </th>
-                                            <th className="px-4 py-2 text-right text-sm font-medium text-gray-600">
+                                            <th className="px-4 py-2 text-right text-sm font-medium text-zinc-300">
                                                 Subtotal
                                             </th>
                                         </tr>
@@ -417,17 +417,17 @@ export default function OrderFormPage() {
                                         {formData.items
                                             .filter((i) => i.qty > 0)
                                             .map((i) => (
-                                                <tr key={i.menuItem} className="border-t">
-                                                    <td className="px-4 py-2 text-gray-800">
+                                                <tr key={i.menuItem} className="border-t border-zinc-700">
+                                                    <td className="px-4 py-2 text-zinc-100">
                                                         {i.name}
                                                     </td>
-                                                    <td className="px-4 py-2 text-center text-gray-800">
+                                                    <td className="px-4 py-2 text-center text-zinc-100">
                                                         {i.qty}
                                                     </td>
-                                                    <td className="px-4 py-2 text-center text-gray-600">
+                                                    <td className="px-4 py-2 text-center text-zinc-400">
                                                         LKR {i.price}
                                                     </td>
-                                                    <td className="px-4 py-2 text-right text-gray-800 font-medium">
+                                                    <td className="px-4 py-2 text-right text-zinc-100 font-medium">
                                                         LKR {(i.price * i.qty).toFixed(2)}
                                                     </td>
                                                 </tr>
@@ -437,28 +437,28 @@ export default function OrderFormPage() {
                             </div>
 
                             {/* Totals Breakdown */}
-                            <div className="mt-4 space-y-2 border-t pt-4">
-                                <div className="flex justify-end gap-4 text-gray-700">
+                            <div className="mt-4 space-y-2 border-t border-zinc-700 pt-4">
+                                <div className="flex justify-end gap-4 text-zinc-400">
                                     <span>Subtotal:</span>
                                     <span className="w-24 text-right">
                                         LKR {subtotal.toFixed(2)}
                                     </span>
                                 </div>
-                                <div className="flex justify-end gap-4 text-gray-700">
+                                <div className="flex justify-end gap-4 text-zinc-400">
                                     <span>Tax (13%):</span>
                                     <span className="w-24 text-right">
                                         LKR {tax.toFixed(2)}
                                     </span>
                                 </div>
                                 {formData.orderType === "dine-in" && (
-                                    <div className="flex justify-end gap-4 text-gray-700">
+                                    <div className="flex justify-end gap-4 text-zinc-400">
                                         <span>Service Charge (10%):</span>
                                         <span className="w-24 text-right">
                                             LKR {serviceCharge.toFixed(2)}
                                         </span>
                                     </div>
                                 )}
-                                <div className="flex justify-end gap-4 font-semibold text-lg text-gray-900 border-t pt-2">
+                                <div className="flex justify-end gap-4 font-semibold text-lg text-zinc-100 border-t border-zinc-700 pt-2">
                                     <span>Total:</span>
                                     <span className="w-24 text-right">
                                         LKR {total.toFixed(2)}
@@ -473,7 +473,7 @@ export default function OrderFormPage() {
                         <button
                             type="button"
                             onClick={() => navigate("/orders/add")}
-                            className="w-[200px] py-2 px-4 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
+                            className="w-[200px] py-2 px-4 bg-zinc-700 text-zinc-100 rounded-lg hover:bg-zinc-600 transition"
                         >
                             Cancel
                         </button>
@@ -481,7 +481,7 @@ export default function OrderFormPage() {
                         <button
                             type="submit"
                             disabled={isLoading || formData.items.length === 0}
-                            className={`w-[200px] py-2 px-4 bg-black text-white rounded-lg hover:bg-gray-800 transition ${
+                            className={`w-[200px] py-2 px-4 bg-zinc-900 text-white rounded-lg hover:bg-zinc-800 transition ${
                                 isLoading || formData.items.length === 0
                                     ? "opacity-50 cursor-not-allowed"
                                     : ""

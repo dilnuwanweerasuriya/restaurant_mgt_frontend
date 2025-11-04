@@ -33,7 +33,7 @@ function App() {
             path="/*"
             element={
               <ProtectedRoute>
-                <div className="min-h-screen bg-gray-100">
+                <div className="min-h-screen bg-zinc-950">
                   <Navbar />
                   <Routes>
                     <Route path="/" element={<DashboardPage />} />

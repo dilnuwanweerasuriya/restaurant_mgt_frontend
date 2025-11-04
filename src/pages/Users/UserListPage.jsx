@@ -1,11 +1,15 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import OptionsButton from "../../components/OptionsButton";
 import { Link } from "react-router-dom";
+import DataTable from "../../components/DataTables";
+import { LuPen } from "react-icons/lu";
 
 export default function UserListPage() {
-
     const [users, setUsers] = useState([]);
+    const [role, setRole] = useState("all");
+    const [searchQuery, setSearchQuery] = useState("");
+
     const token = localStorage.getItem("token")
 
     const fetchUsers = async () => {
@@ -28,40 +32,87 @@ export default function UserListPage() {
         fetchUsers();
     }, []);
 
+    const filteredUsers = useMemo(() => {
+        let filtered = [...users];
+
+        if (role === "admin") {
+            filtered = filtered.filter((user) => user.role === "admin");
+        } else if (role === "cashier") {
+            filtered = filtered.filter((user) => user.role === "cashier");
+        }
+
+        if (searchQuery) {
+            filtered = filtered.filter((user) => user.name.toLowerCase().includes(searchQuery.toLowerCase()));
+        }
+
+        return filtered;
+    }, [users, role, searchQuery]);
+
+
+    const columns = [
+        {
+            key: "name",
+            header: "Name"
+        },
+        {
+            key: "email",
+            header: "Email"
+        },
+        {
+            key: "role",
+            header: "Role",
+            render: (value) => (
+                value === "admin" ? "Admin" : "Cashier"
+            )
+        },
+        {
+            key: "_id",
+            header: "Actions",
+            render: (value) => (
+                <Link to={`/users/${value}`} className="text-white hover:text-blue-500 hover:underline flex justify-center"><LuPen /></Link>
+            )
+        }
+    ]
+
     return (
-        <div className="p-8">
+        <div className="min-h-screen bg-zinc-900 text-white p-8">
             <OptionsButton />
 
-            <h1 className="text-2xl font-bold mb-4">All Users</h1>
-            {/* table for users */}
-            <div className="">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                        <tr className="divide-x divide-gray-200">
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        {users.map(user => (
-                            <tr key={user._id} className="divide-x divide-gray-200">
-                                <td className="px-6 py-4 whitespace-nowrap">{user.name}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{user.role}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <Link to={`/users/${user._id}`}>
-                                        <button className="bg-gray-500 hover:bg-black text-white font-semibold px-4 py-2 rounded cursor-pointer">
-                                            Edit
-                                        </button>
-                                    </Link>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+            <div className="flex justify-center items-center mb-6">
+                <h1 className="text-2xl font-bold">All Users</h1>
             </div>
+
+            <div className="flex justify-end items-center mb-6">
+                <div className="flex flex-col sm:flex-row gap-4">
+                    {/* Category */}
+                    <div>
+                        <label className="block text-sm font-medium text-zinc-300 mb-1">
+                            User Role
+                        </label>
+                        <select
+                            onChange={(e) => setRole(e.target.value)}
+                            className="w-full sm:w-[180px] h-[42px] border border-zinc-700 rounded-lg px-3 py-2 bg-zinc-800 text-zinc-100 cursor-pointer focus:ring-2 focus:ring-zinc-300"
+                        >
+                            <option value="all">All</option>
+                            <option value="admin">Admin</option>
+                            <option value="cashier">Cashier</option>
+                        </select>
+                    </div>
+
+                    {/* Search */}
+                    <div className="flex items-end">
+                        <input
+                            type="text"
+                            placeholder="Search food..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full sm:w-[200px] h-[42px] border border-zinc-700 rounded-lg px-3 py-2 bg-zinc-800 text-zinc-100 focus:ring-2 focus:ring-zinc-300"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <DataTable columns={columns} data={filteredUsers} keyField="_id" />
         </div>
     );
 }

@@ -1,99 +1,286 @@
-import React, { useEffect, useState } from 'react'
-import OptionsButton from '../../components/OptionsButton'
-import axios from 'axios';
+import React, { useEffect, useMemo, useState } from "react";
+import axios from "axios";
+import OptionsButton from "../../components/OptionsButton";
+import DataTable from "../../components/DataTables";
 
 export default function OrderListPage() {
     const [orders, setOrders] = useState([]);
-    const token = localStorage.getItem("token")
+    const [searchTerm, setSearchTerm] = useState("");
+    const [dateFilter, setDateFilter] = useState(() => {
+        const today = new Date();
+        return today.toISOString().split('T')[0];
+    });
+
+    const [orderTypeFilter, setOrderTypeFilter] = useState("");
+    const [paymentStatusFilter, setPaymentStatusFilter] = useState("");
+    const [orderStatusFilter, setOrderStatusFilter] = useState("");
+
+    const token = localStorage.getItem("token");
 
     const fetchOrders = async () => {
         try {
-            const response = await axios.get(import.meta.env.VITE_BACKEND_URL + '/orders',
+            const response = await axios.get(
+                import.meta.env.VITE_BACKEND_URL + "/orders",
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`
-                    }
+                        Authorization: `Bearer ${token}`,
+                    },
                 }
-            )
-            const data = response.data;
-            setOrders(data);
+            );
+            setOrders(response.data);
         } catch (error) {
-            console.error('Error fetching users:', error);
+            console.error("Error fetching orders:", error);
         }
     };
 
     useEffect(() => {
         fetchOrders();
     }, []);
+
+    const filteredOrders = useMemo(() => {
+        let filtered = [...orders];
+
+        if (searchTerm) {
+            filtered = filtered.filter((order) =>
+                order.items.some((item) =>
+                    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+                )
+            );
+        }
+
+        if (dateFilter) {
+            const filterDate = new Date(dateFilter);
+            filtered = filtered.filter((order) => {
+                const orderDate = new Date(order.createdAt);
+                return (
+                    orderDate.getFullYear() === filterDate.getFullYear() &&
+                    orderDate.getMonth() === filterDate.getMonth() &&
+                    orderDate.getDate() === filterDate.getDate()
+                )
+            })
+        }
+
+        if (orderTypeFilter) {
+            filtered = filtered.filter((order) =>
+                order.orderType === orderTypeFilter
+            );
+        }
+
+        if (paymentStatusFilter) {
+            filtered = filtered.filter((order) =>
+                order.paymentStatus === paymentStatusFilter
+            );
+        }
+
+        if (orderStatusFilter) {
+            filtered = filtered.filter((order) =>
+                order.status === orderStatusFilter
+            );
+        }
+
+        return filtered;
+    }, [orders, searchTerm, dateFilter, orderTypeFilter, paymentStatusFilter, orderStatusFilter]);
+
+    const clearFilters = () => {
+        setSearchTerm("");
+        
+        const today = new Date();
+        setDateFilter(today.toISOString().split('T')[0]);
+
+        setOrderTypeFilter("");
+        setPaymentStatusFilter("");
+        setOrderStatusFilter("");
+    }
+
+
+    const columns = [
+        {
+            key: "createdAt",
+            header: "Ordered Time",
+            render: (value) =>
+                new Date(value).toLocaleString("en-IN", {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                }),
+        },
+        {
+            key: "orderType",
+            header: "Order Type",
+            render: (value) => value.charAt(0).toUpperCase() + value.slice(1),
+        },
+        {
+            key: "items",
+            header: "Items",
+            render: (items) => (
+                <ul className="space-y-1">
+                    {items.map((item) => (
+                        <li key={item._id} className="text-zinc-300">
+                            {item.name}
+                        </li>
+                    ))}
+                </ul>
+            ),
+        },
+        {
+            key: "subtotal",
+            header: "Subtotal",
+            render: (v) => `LKR ${v?.toFixed(2)}`,
+        },
+        {
+            key: "total",
+            header: "Total",
+            render: (v) => `LKR ${v?.toFixed(2)}`,
+        },
+        {
+            key: "paymentStatus",
+            header: "Payment Status",
+            render: (status) => (
+                <span
+                    className={`px-3 py-1 rounded-full text-sm font-semibold capitalize
+            ${status === "paid"
+                            ? "bg-green-900/30 text-green-400"
+                            : status === "unpaid"
+                                ? "bg-red-900/30 text-red-400"
+                                : "bg-zinc-700 text-zinc-300"
+                        }`}
+                >
+                    {status}
+                </span>
+            ),
+        },
+        {
+            key: "status",
+            header: "Order Status",
+            render: (status) => {
+                const colorMap = {
+                    pending: "bg-yellow-900/30 text-yellow-400",
+                    preparing: "bg-orange-900/30 text-orange-400",
+                    ready: "bg-green-900/30 text-green-400",
+                    served: "bg-green-900/30 text-green-400",
+                    completed: "bg-green-900/30 text-green-400",
+                    cancelled: "bg-red-900/30 text-red-400",
+                };
+                return (
+                    <span
+                        className={`px-3 py-1 rounded-full text-sm font-semibold capitalize ${colorMap[status] || "bg-zinc-700 text-zinc-300"
+                            }`}
+                    >
+                        {status}
+                    </span>
+                );
+            },
+        },
+    ];
+
     return (
-        <div className="p-8">
+        <div className="min-h-screen bg-zinc-900 text-white p-8">
             <OptionsButton />
 
-            <h1 className="text-2xl font-bold mb-4">All Orders</h1>
-            {/* table for users */}
-            <div className="">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                        <tr className="divide-x divide-gray-200">
-                            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Ordered Time</th>
-                            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Order Type</th>
-                            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
-                            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
-                            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
-                            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Order Status</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        {orders.map((order) => (
-                            <tr key={order._id} className="divide-x divide-gray-200">
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
-                                    {new Date(order.createdAt).toLocaleString("en-IN", {
-                                        dateStyle: "medium",
-                                        timeStyle: "short",
-                                    })}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">{order.orderType}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
-                                    <ul>
-                                        {order.items.map((item) => (
-                                            <li key={item._id}>{item.name}</li>
-                                        ))}
-                                    </ul>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">LKR {order.subtotal?.toFixed(2)}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">LKR {order.total?.toFixed(2)}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
-                                    <span
-                                        className={`px-3 py-1 rounded-full text-sm font-semibold capitalize
-                                                ${order.paymentStatus === "paid" ? "bg-green-100 text-green-700" 
-                                                : order.paymentStatus === "unpaid" ? "bg-red-100 text-red-700"
-                                                : "bg-gray-100 text-gray-700"
-                                            }`}
-                                    >
-                                        {order.paymentStatus}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
-                                    <span
-                                        className={`px-3 py-1 rounded-full text-sm font-semibold capitalize 
-                                                ${order.status === "pending" ? "bg-yellow-100 text-yellow-700" 
-                                                : order.status === "preparing" ? "bg-orange-100 text-orange-700"
-                                                : order.status === "ready" ? "bg-green-100 text-green-700"
-                                                : order.status === "served" ? "bg-green-100 text-green-700"
-                                                : order.status === "completed" ? "bg-green-100 text-green-700"
-                                                : order.status === "cancelled" ? "bg-cancelled-100 text-cancelled-700"
-                                                : "bg-gray-100 text-gray-700"
-                                            }`}
-                                    >
-                                        {order.status}
-                                    </span>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+            <div className="flex justify-center items-center mb-6">
+                <h1 className="text-2xl font-bold">All Orders</h1>
             </div>
+
+            <div className="bg-zinc-800 rounded-lg p-6 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+                    {/* Search by item name */}
+                    <div className="flex flex-col">
+                        <label className="text-sm text-zinc-400 mb-1">
+                            Search by Item Name
+                        </label>
+                        <input
+                            type="text"
+                            placeholder="Search items..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="px-3 py-2 bg-zinc-700 border border-zinc-600 rounded-md text-white placeholder-zinc-400 focus:outline-none focus:border-zinc-500"
+                        />
+                    </div>
+
+                    {/* Date Filter */}
+                    <div className="flex flex-col">
+                        <label className="text-sm text-zinc-400 mb-1">
+                            Date Filter
+                        </label>
+                        <input
+                            type="date"
+                            value={dateFilter}
+                            onChange={(e) => setDateFilter(e.target.value)}
+                            className="px-3 py-2 bg-zinc-700 border border-zinc-600 rounded-md text-white focus:outline-none focus:border-zinc-500"
+                        />
+                    </div>
+
+                    {/* Order Type Filter */}
+                    <div className="flex flex-col">
+                        <label className="text-sm text-zinc-400 mb-1">
+                            Order Type
+                        </label>
+                        <select
+                            value={orderTypeFilter}
+                            onChange={(e) => setOrderTypeFilter(e.target.value)}
+                            className="px-3 py-2 bg-zinc-700 border border-zinc-600 rounded-md text-white focus:outline-none focus:border-zinc-500"
+                        >
+                            <option value="">All Types</option>
+                            <option value="dine-in">Dine In</option>
+                            <option value="takeaway">Takeaway</option>
+                            <option value="delivery">Delivery</option>
+                        </select>
+                    </div>
+
+                    {/* Payment Status Filter */}
+                    <div className="flex flex-col">
+                        <label className="text-sm text-zinc-400 mb-1">
+                            Payment Status
+                        </label>
+                        <select
+                            value={paymentStatusFilter}
+                            onChange={(e) => setPaymentStatusFilter(e.target.value)}
+                            className="px-3 py-2 bg-zinc-700 border border-zinc-600 rounded-md text-white focus:outline-none focus:border-zinc-500"
+                        >
+                            <option value="">All Payment Status</option>
+                            <option value="paid">Paid</option>
+                            <option value="unpaid">Unpaid</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+
+                    {/* Order Status Filter */}
+                    <div className="flex flex-col">
+                        <label className="text-sm text-zinc-400 mb-1">
+                            Order Status
+                        </label>
+                        <select
+                            value={orderStatusFilter}
+                            onChange={(e) => setOrderStatusFilter(e.target.value)}
+                            className="px-3 py-2 bg-zinc-700 border border-zinc-600 rounded-md text-white focus:outline-none focus:border-zinc-500"
+                        >
+                            <option value="">All Order Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="preparing">Preparing</option>
+                            <option value="ready">Ready</option>
+                            <option value="served">Served</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+
+                    {/* Clear Filters Button */}
+                    <div className="flex flex-col justify-end">
+                        <button
+                            onClick={clearFilters}
+                            className="px-4 py-2 bg-zinc-700 hover:bg-zinc-600 text-white rounded-md transition-colors duration-200"
+                        >
+                            Clear Filters
+                        </button>
+                    </div>
+                </div>
+
+                {/* Results count */}
+                <div className="mt-4 text-sm text-zinc-400">
+                    Showing {filteredOrders.length} of {orders.length} orders
+                </div>
+            </div>
+
+            <DataTable columns={columns} data={filteredOrders} keyField="_id" />
         </div>
-    )
+    );
 }

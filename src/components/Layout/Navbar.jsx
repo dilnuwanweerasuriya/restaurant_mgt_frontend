@@ -5,8 +5,8 @@ export default function Navbar() {
     const { user, logout } = useContext(AuthContext);
 
     return (
-        <div className="flex items-center justify-between bg-white shadow px-8 py-4">
-            <span className="text-gray-800 font-medium">
+        <div className="flex items-center justify-between bg-zinc-900 border-zinc-800 shadow px-8 py-4">
+            <span className="text-white font-medium">
                 Logged in as <strong>{user?.name}</strong>
             </span>
             <button
