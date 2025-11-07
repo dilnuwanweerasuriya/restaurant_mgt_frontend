@@ -1,11 +1,14 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 import OptionsButton from '../../components/OptionsButton';
 import { LuCheck, LuPen, LuX } from 'react-icons/lu';
+import { AuthContext } from '../../context/AuthContext';
 
 function MenuListPage() {
     const token = localStorage.getItem('token');
+
+    const { user } = useContext(AuthContext);
 
     const [menuItems, setMenuItems] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState("all");
@@ -98,15 +101,14 @@ function MenuListPage() {
 
             if (response.status === 200) {
                 toast.success('Menu item updated successfully');
-                // Update the local state with the updated item, ensuring price is a number
                 setMenuItems(prevItems =>
                     prevItems.map(item =>
-                        item._id === editingItem._id 
-                            ? { 
-                                ...item, 
+                        item._id === editingItem._id
+                            ? {
+                                ...item,
                                 ...formData,
                                 price: parseFloat(formData.price) // Ensure price is a number in local state
-                        } 
+                            }
                             : item
                     )
                 );
@@ -209,13 +211,18 @@ function MenuListPage() {
                                         </p>
                                     </div>
 
-                                    <button
-                                        onClick={() => onEdit(item)}
-                                        className="p-1.5 rounded-full hover:bg-zinc-700 transition-colors"
-                                        aria-label="Edit item"
-                                    >
-                                        <LuPen className="h-5 w-5 text-zinc-300 hover:text-white" />
-                                    </button>
+
+                                    {
+                                        user.role === 'admin' && (
+                                            <button
+                                                onClick={() => onEdit(item)}
+                                                className="p-1.5 rounded-full hover:bg-zinc-700 transition-colors"
+                                                aria-label="Edit item"
+                                            >
+                                                <LuPen className="h-5 w-5 text-zinc-300 hover:text-white" />
+                                            </button>
+                                        )
+                                    }
                                 </div>
 
                                 <div className="mt-3 flex items-center gap-2">

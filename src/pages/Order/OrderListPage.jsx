@@ -3,6 +3,7 @@ import axios from "axios";
 import OptionsButton from "../../components/OptionsButton";
 import DataTable from "../../components/DataTables";
 import { AuthContext } from "../../context/AuthContext";
+import PrintBill from "../../components/PrintBill";
 
 
 export default function OrderListPage() {
@@ -175,6 +176,17 @@ export default function OrderListPage() {
                 );
             },
         },
+        {
+            key: "actions",
+            header: "Actions",
+            render: (_, order) => (
+                <PrintBill
+                    orderData={order}
+                    buttonText="Print"
+                    showIcon={true}
+                />
+            ),
+        }
     ];
 
     return (

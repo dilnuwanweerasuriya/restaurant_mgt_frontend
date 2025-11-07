@@ -18,7 +18,7 @@ export default function OptionsPage() {
     { name: "Menu", path: "/menu", icon: <MdRestaurantMenu size={40} />, permission: "all" },
     { name: "Users", path: "/users", icon: <MdPeople size={40} />, permission: "admin" },
     { name: "Reports", path: "/reports", icon: <TbReportAnalytics size={40} />, permission: "admin" },
-    { name: "Settings", path: "/settings", icon: <MdSettings size={40} />, permission: "all" },
+    { name: "Profile", path: "/profile", icon: <MdSettings size={40} />, permission: "all" },
   ];
 
   const visibleCards = cards.filter(

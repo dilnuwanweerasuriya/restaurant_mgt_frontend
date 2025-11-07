@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import OptionsButton from "../../components/OptionsButton";
+import PrintBill from "../../components/PrintBill";
 
 export default function OrderFormPage() {
     const navigate = useNavigate();
@@ -144,6 +145,20 @@ export default function OrderFormPage() {
         return matchesCategory && matchesSearch;
     });
 
+    // Prepare order data for PrintBill component
+    const orderDataForPrint = {
+        orderType: formData.orderType,
+        customerName: formData.customerName,
+        customerPhone: formData.customerPhone,
+        items: formData.items,
+        subtotal,
+        tax,
+        serviceCharge,
+        total,
+        status: formData.status,
+        paymentStatus: formData.paymentStatus,
+    };
+
     return (
         <div className="p-8">
             <OptionsButton />
@@ -281,11 +296,10 @@ export default function OrderFormPage() {
                                     return (
                                         <div
                                             key={item._id}
-                                            className={`flex flex-col items-center border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer ${
-                                                qty > 0
+                                            className={`flex flex-col items-center border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer ${qty > 0
                                                     ? "border-zinc-300 bg-zinc-800"
                                                     : "border-zinc-700"
-                                            }`}
+                                                }`}
                                         >
                                             <div className="w-full h-40 bg-zinc-800">
                                                 {item.image ? (
@@ -317,11 +331,10 @@ export default function OrderFormPage() {
                                                 <button
                                                     type="button"
                                                     onClick={handleDecrease}
-                                                    className={`w-8 h-8 rounded-full flex items-center justify-center border ${
-                                                        qty > 0
+                                                    className={`w-8 h-8 rounded-full flex items-center justify-center border ${qty > 0
                                                             ? "border-zinc-700 hover:bg-zinc-700 hover:border-white hover:text-white"
                                                             : "border-zinc-700 text-zinc-400 cursor-not-allowed opacity-50"
-                                                    }`}
+                                                        }`}
                                                     disabled={qty === 0}
                                                 >
                                                     –
@@ -478,14 +491,22 @@ export default function OrderFormPage() {
                             Cancel
                         </button>
 
+                        <PrintBill
+                            orderData={orderDataForPrint}
+                            buttonText="Print Bill"
+                            disabled={formData.items.length === 0}
+                            buttonClassName="w-[200px] py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            showIcon={true}
+                            type="submit"
+                        />
+
                         <button
                             type="submit"
                             disabled={isLoading || formData.items.length === 0}
-                            className={`w-[200px] py-2 px-4 bg-zinc-900 text-white rounded-lg hover:bg-zinc-800 transition ${
-                                isLoading || formData.items.length === 0
+                            className={`w-[200px] py-2 px-4 bg-zinc-900 border-2 border-zinc-800 text-white rounded-lg hover:bg-zinc-800 transition ${isLoading || formData.items.length === 0
                                     ? "opacity-50 cursor-not-allowed"
                                     : ""
-                            }`}
+                                }`}
                         >
                             {isLoading ? "Processing..." : "Create Order"}
                         </button>
