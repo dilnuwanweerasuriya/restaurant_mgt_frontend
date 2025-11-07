@@ -131,6 +131,65 @@ export default function OrderFormPage() {
         }
     };
 
+    const handleSaveAndPrint = async () => {
+        if (formData.items.length === 0) {
+            toast.error("Please select at least one item");
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const token = localStorage.getItem("token");
+            const { subtotal, tax, serviceCharge, total } = calculateTotals();
+
+            const res = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/orders`,
+                {
+                    orderType: formData.orderType,
+                    customerName: formData.customerName,
+                    customerPhone: formData.customerPhone,
+                    items: formData.items,
+                    subtotal,
+                    tax,
+                    serviceCharge,
+                    total,
+                    status: formData.status,
+                    paymentStatus: formData.paymentStatus,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            toast.success("Order created successfully!");
+
+            // Return the order data with the original items format for printing
+            return {
+                _id: res.data._id,
+                orderType: formData.orderType,
+                customerName: formData.customerName,
+                customerPhone: formData.customerPhone,
+                items: formData.items, // Use the original items from formData
+                subtotal,
+                tax,
+                serviceCharge,
+                total,
+                status: formData.status,
+                paymentStatus: formData.paymentStatus,
+                createdAt: res.data.createdAt || new Date().toISOString()
+            };
+        } catch (err) {
+            console.error(err);
+            toast.error(err.response?.data?.message || "Failed to create order");
+            return null;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const { subtotal, tax, serviceCharge, total } = calculateTotals();
 
     // 🔍 Filtered menu based on category + search
@@ -297,8 +356,8 @@ export default function OrderFormPage() {
                                         <div
                                             key={item._id}
                                             className={`flex flex-col items-center border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer ${qty > 0
-                                                    ? "border-zinc-300 bg-zinc-800"
-                                                    : "border-zinc-700"
+                                                ? "border-zinc-300 bg-zinc-800"
+                                                : "border-zinc-700"
                                                 }`}
                                         >
                                             <div className="w-full h-40 bg-zinc-800">
@@ -332,8 +391,8 @@ export default function OrderFormPage() {
                                                     type="button"
                                                     onClick={handleDecrease}
                                                     className={`w-8 h-8 rounded-full flex items-center justify-center border ${qty > 0
-                                                            ? "border-zinc-700 hover:bg-zinc-700 hover:border-white hover:text-white"
-                                                            : "border-zinc-700 text-zinc-400 cursor-not-allowed opacity-50"
+                                                        ? "border-zinc-700 hover:bg-zinc-700 hover:border-white hover:text-white"
+                                                        : "border-zinc-700 text-zinc-400 cursor-not-allowed opacity-50"
                                                         }`}
                                                     disabled={qty === 0}
                                                 >
@@ -491,25 +550,26 @@ export default function OrderFormPage() {
                             Cancel
                         </button>
 
-                        <PrintBill
-                            orderData={orderDataForPrint}
-                            buttonText="Print Bill"
-                            disabled={formData.items.length === 0}
-                            buttonClassName="w-[200px] py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                            showIcon={true}
-                            type="submit"
-                        />
-
                         <button
                             type="submit"
                             disabled={isLoading || formData.items.length === 0}
                             className={`w-[200px] py-2 px-4 bg-zinc-900 border-2 border-zinc-800 text-white rounded-lg hover:bg-zinc-800 transition ${isLoading || formData.items.length === 0
-                                    ? "opacity-50 cursor-not-allowed"
-                                    : ""
+                                ? "opacity-50 cursor-not-allowed"
+                                : ""
                                 }`}
                         >
-                            {isLoading ? "Processing..." : "Create Order"}
+                            {isLoading ? "Processing..." : "Save"}
                         </button>
+
+                        <PrintBill
+                            orderData={orderDataForPrint}
+                            buttonText="Save and Print"
+                            disabled={formData.items.length === 0 || isLoading}
+                            buttonClassName="w-[200px] py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            showIcon={true}
+                            onBeforePrint={handleSaveAndPrint}
+                            onAfterPrint={() => navigate("/orders/list")}
+                        />
                     </div>
                 </form>
             </div>

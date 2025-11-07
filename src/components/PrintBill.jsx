@@ -6,32 +6,47 @@ const PrintBill = ({
     buttonText = "Print Bill", 
     buttonClassName = "",
     showIcon = true,
-    disabled = false 
+    disabled = false,
+    onBeforePrint = null, // New prop for executing before print
+    onAfterPrint = null  // New prop for executing after print
 }) => {
-    const handlePrintBill = () => {
-        if (!orderData || !orderData.items || orderData.items.length === 0) {
+    const handlePrintBill = async () => {
+        let dataForPrinting = orderData;
+        
+        // If onBeforePrint is provided, execute it first (e.g., save order)
+        if (onBeforePrint) {
+            const result = await onBeforePrint();
+            if (!result) {
+                // If save failed, don't proceed with printing
+                return;
+            }
+            // Use the returned data if available (includes saved order ID)
+            dataForPrinting = result;
+        }
+        
+        if (!dataForPrinting || !dataForPrinting.items || dataForPrinting.items.length === 0) {
             toast.error("No items to print");
             return;
         }
 
-        const currentDate = orderData.createdAt 
-            ? new Date(orderData.createdAt).toLocaleString()
+        const currentDate = dataForPrinting.createdAt 
+            ? new Date(dataForPrinting.createdAt).toLocaleString()
             : new Date().toLocaleString();
 
-        const orderId = orderData._id 
-            ? orderData._id.slice(-6).toUpperCase() 
+        const orderId = dataForPrinting._id 
+            ? dataForPrinting._id.slice(-6).toUpperCase() 
             : 'NEW';
 
         // Calculate totals
-        const subtotal = orderData.subtotal || orderData.items.reduce((total, item) => 
+        const subtotal = dataForPrinting.subtotal || dataForPrinting.items.reduce((total, item) => 
             total + (item.price * item.qty), 0
         );
-        const tax = orderData.tax || (subtotal * 0.13);
-        const serviceCharge = orderData.serviceCharge || 
-            (orderData.orderType === "dine-in" ? subtotal * 0.1 : 0);
-        const total = orderData.total || (subtotal + tax + serviceCharge);
+        const tax = dataForPrinting.tax || (subtotal * 0.13);
+        const serviceCharge = dataForPrinting.serviceCharge || 
+            (dataForPrinting.orderType === "dine-in" ? subtotal * 0.1 : 0);
+        const total = dataForPrinting.total || (subtotal + tax + serviceCharge);
 
-        // Create print window content
+        // Create print window content (same as before)
         const printContent = `
             <!DOCTYPE html>
             <html>
@@ -147,18 +162,18 @@ const PrintBill = ({
                     </div>
                     <div class="info-row">
                         <span><strong>Order Type:</strong></span>
-                        <span>${orderData.orderType ? orderData.orderType.toUpperCase() : 'N/A'}</span>
+                        <span>${dataForPrinting.orderType ? dataForPrinting.orderType.toUpperCase() : 'N/A'}</span>
                     </div>
-                    ${orderData.customerName ? `
+                    ${dataForPrinting.customerName ? `
                         <div class="info-row">
                             <span><strong>Customer:</strong></span>
-                            <span>${orderData.customerName}</span>
+                            <span>${dataForPrinting.customerName}</span>
                         </div>
                     ` : ''}
-                    ${orderData.customerPhone ? `
+                    ${dataForPrinting.customerPhone ? `
                         <div class="info-row">
                             <span><strong>Phone:</strong></span>
-                            <span>${orderData.customerPhone}</span>
+                            <span>${dataForPrinting.customerPhone}</span>
                         </div>
                     ` : ''}
                 </div>
@@ -173,7 +188,7 @@ const PrintBill = ({
                         </tr>
                     </thead>
                     <tbody>
-                        ${orderData.items.map(item => `
+                        ${dataForPrinting.items.map(item => `
                             <tr>
                                 <td>${item.name}</td>
                                 <td class="text-center">${item.qty}</td>
@@ -193,7 +208,7 @@ const PrintBill = ({
                         <span>Tax (13%):</span>
                         <span>LKR ${tax.toFixed(2)}</span>
                     </div>
-                    ${orderData.orderType === "dine-in" ? `
+                    ${dataForPrinting.orderType === "dine-in" ? `
                         <div class="total-row">
                             <span>Service Charge (10%):</span>
                             <span>LKR ${serviceCharge.toFixed(2)}</span>
@@ -205,18 +220,18 @@ const PrintBill = ({
                     </div>
                 </div>
                 
-                ${orderData.status || orderData.paymentStatus ? `
+                ${dataForPrinting.status || dataForPrinting.paymentStatus ? `
                     <div class="status-section">
-                        ${orderData.status ? `
+                        ${dataForPrinting.status ? `
                             <div class="info-row">
                                 <span><strong>Order Status:</strong></span>
-                                <span>${orderData.status.toUpperCase()}</span>
+                                <span>${dataForPrinting.status.toUpperCase()}</span>
                             </div>
                         ` : ''}
-                        ${orderData.paymentStatus ? `
+                        ${dataForPrinting.paymentStatus ? `
                             <div class="info-row">
                                 <span><strong>Payment Status:</strong></span>
-                                <span>${orderData.paymentStatus.toUpperCase()}</span>
+                                <span>${dataForPrinting.paymentStatus.toUpperCase()}</span>
                             </div>
                         ` : ''}
                     </div>
@@ -245,6 +260,13 @@ const PrintBill = ({
         // Wait for content to load then print
         printWindow.onload = function() {
             printWindow.print();
+            
+            // Execute onAfterPrint callback after printing
+            if (onAfterPrint) {
+                setTimeout(() => {
+                    onAfterPrint();
+                }, 100);
+            }
         };
     };
 

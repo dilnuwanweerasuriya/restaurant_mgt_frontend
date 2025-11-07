@@ -121,7 +121,7 @@ export default function OrderListPage() {
                 <ul className="space-y-1">
                     {items.map((item) => (
                         <li key={item._id} className="text-zinc-300">
-                            {item.name}
+                            {item.name} x ({item.qty})
                         </li>
                     ))}
                 </ul>
