@@ -14,16 +14,20 @@ export default function OrderFormPage() {
         customerName: "",
         customerPhone: "",
         items: [],
+        waiter: "",
         status: "pending",
         paymentStatus: "unpaid",
     });
 
     const [menuItems, setMenuItems] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [waiters, setWaiters] = useState([]);
 
     // 🍽️ Category and search
     const [selectedCategory, setSelectedCategory] = useState("all");
     const [searchQuery, setSearchQuery] = useState("");
+
+    const token = localStorage.getItem("token");
 
     // 🧭 Map numeric type from URL to readable text
     useEffect(() => {
@@ -35,7 +39,6 @@ export default function OrderFormPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const token = localStorage.getItem("token");
                 const menu = await axios.get(
                     `${import.meta.env.VITE_BACKEND_URL}/menus`,
                     {
@@ -50,6 +53,24 @@ export default function OrderFormPage() {
         };
         fetchData();
     }, []);
+
+    useEffect(() => {
+        const fetchWaiter = async () => {
+            try {
+                const waiters = await axios.get(
+                    `${import.meta.env.VITE_BACKEND_URL}/users/waiters`,
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }
+                );
+                setWaiters(waiters.data);
+            } catch (err) {
+                console.error(err);
+                toast.error("Failed to load waiters");
+            }
+        };
+        fetchWaiter();
+    }, [])
 
     const handleItemChange = (menuItem, name, price, qty, notes = "") => {
         setFormData((prev) => {
@@ -95,6 +116,12 @@ export default function OrderFormPage() {
             return;
         }
 
+        // Add waiter validation for dine-in orders
+        if (formData.orderType === "dine-in" && !formData.waiter) {
+            toast.error("Please select a waiter for dine-in order");
+            return;
+        }
+
         setIsLoading(true);
         try {
             const token = localStorage.getItem("token");
@@ -111,6 +138,7 @@ export default function OrderFormPage() {
                     tax,
                     serviceCharge,
                     total,
+                    waiter: formData.waiter,
                     status: formData.status,
                     paymentStatus: formData.paymentStatus,
                 },
@@ -153,6 +181,7 @@ export default function OrderFormPage() {
                     tax,
                     serviceCharge,
                     total,
+                    waiter: formData.waiter,
                     status: formData.status,
                     paymentStatus: formData.paymentStatus,
                 },
@@ -189,6 +218,9 @@ export default function OrderFormPage() {
             setIsLoading(false);
         }
     };
+
+    const isFormValid = formData.items.length > 0 && 
+    (formData.orderType !== "dine-in" || formData.waiter);
 
     const { subtotal, tax, serviceCharge, total } = calculateTotals();
 
@@ -458,6 +490,34 @@ export default function OrderFormPage() {
                                 <option value="unpaid">Unpaid</option>
                             </select>
                         </div>
+
+                        {
+                            typeId === "1" && (
+                                <div className="flex-1">
+                                    <label className="block text-sm font-medium text-zinc-300 mb-1">
+                                        Waiter <span className="text-red-500">*</span>
+                                    </label>
+                                    <select
+                                        value={formData.waiter}
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                waiter: e.target.value,
+                                            })
+                                        }
+                                        required
+                                        className="w-full border border-zinc-700 rounded-lg px-3 py-2 bg-zinc-800 text-zinc-100 cursor-pointer focus:ring-2 focus:ring-zinc-300"
+                                    >
+                                        <option value="">Select a waiter</option>
+                                        {waiters.map((waiter) => (
+                                            <option key={waiter._id} value={waiter._id}>
+                                                {waiter.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )
+                        }
                     </div>
 
                     {/* 🧾 Selected Items Summary */}
@@ -552,10 +612,10 @@ export default function OrderFormPage() {
 
                         <button
                             type="submit"
-                            disabled={isLoading || formData.items.length === 0}
-                            className={`w-[200px] py-2 px-4 bg-zinc-900 border-2 border-zinc-800 text-white rounded-lg hover:bg-zinc-800 transition ${isLoading || formData.items.length === 0
-                                ? "opacity-50 cursor-not-allowed"
-                                : ""
+                            disabled={isLoading || !isFormValid}
+                            className={`w-[200px] py-2 px-4 bg-zinc-900 border-2 border-zinc-800 text-white rounded-lg hover:bg-zinc-800 transition ${isLoading || !isFormValid
+                                    ? "opacity-50 cursor-not-allowed"
+                                    : ""
                                 }`}
                         >
                             {isLoading ? "Processing..." : "Save"}

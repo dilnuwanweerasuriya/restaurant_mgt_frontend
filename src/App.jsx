@@ -22,6 +22,8 @@ import OrderFormPage from './pages/Order/OrderFormPage.jsx';
 import OrderTypePage from './pages/Order/OrderTypePage.jsx';
 import OptionsPage from './pages/Dashboard/OptionsPage.jsx';
 import ProfilePage from './pages/Settings/ProfilePage.jsx';
+import ReportsTypePage from './pages/Reports/ReportsTypePage.jsx';
+import SalesReports from './pages/Reports/SalesReport.jsx';
 
 function App() {
   return (
@@ -53,7 +55,8 @@ function App() {
                     <Route path='/users' element={<Users />} />
                     <Route path='/users/add' element={<UserFormPage />} />
                     <Route path='/users/list' element={<UserListPage />} />
-                    <Route path='/reports' element={<h1>Reports</h1>} />
+                    <Route path='/reports' element={<ReportsTypePage />} />
+                    <Route path='/sales_report' element={<SalesReports />} />
                     <Route path='/profile' element={<ProfilePage />} />
                   </Routes>
                 </div>
